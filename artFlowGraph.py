@@ -1,8 +1,8 @@
+"""
+@author: Aisha Ali-Gombe
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
+"""
 import subprocess, sys, hashlib
-#import cPickle as pickle
-#from anytree import Node, RenderTree, Resolver, find
-#import networkx as nx
-#import matplotlib.pyplot as plt
 from pygraphviz import *
 import networkx as nx
 from collections import OrderedDict
@@ -13,19 +13,9 @@ import procFiles as proc
 # pygraphiz mac installation - pip install  --install-option="--include-path=/usr/local/Cellar/graphviz/2.42.3/include/" --install-option="--library-path=/usr/local/Cellar/graphviz/2.42.3/lib/" pygraphviz
 # graphviz mac installation - brew install networkx
 
-#dir = '/Users/aishacct/Desktop/Research/ART/Messaging/memdump'
-#root = 
-
-
-#root = Node('0x12e80000')
-#root = Node('0x12e758f8')
-#print root
-# from a given given graph 
 def recurseDecode(G, node):
 	try:
 		rootNode = node.attr['id']	
-		#command = "pypy artProj.py "+dir+" Heap decodeObject "+ rootNode
-		#decoded = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).stdout.read()
 		decoded = str(decodeObject(bitmap_size_, heapBegin_, rootNode)).encode('UTF8')[1:-1]
 		if 'The data for java.lang.String' in decoded:
 			slice = filter(lambda x: x != "", decoded.split("The data for java.lang.String is"))[1]
@@ -164,12 +154,9 @@ def getGraph(G, fName, roots):
 	G.edge_attr['arrowType']='normal'
 	for r in roots:
 		G.add_node(r, id=r, label='', data='')
-	#start = G.get_node(root)
 	counter=0
 	for node in G.iternodes():
 		recurseDecode(G, node)
-		#print node.attr['data']
-		#print("%s %s --- %s" % (pre, node.attr['id'], node.attr['ref']))
 		if depth>0:
 			counter=counter+1
 			if counter>depth:
@@ -179,26 +166,26 @@ def getGraph(G, fName, roots):
 def decodeObject(bitmap_size_, heapBegin_, node):
 	ret = hp.getObject(node, jvm2, lstList, mapList, bitmap_size_, heapBegin_)
 	return "@ Address "+node+"\n"+ '\n'.join(ret)
-
-
-'''def getGraphs():#multiple graphs from multiple root nodes
-	rootList = getRoots()
-	G=AGraph(strict=False,directed=True)
-	[getGraph(G, 'G_''+root, root) for root in rootList]: '''
 	
 
 def help():
-	print "Usage: pypy artFlowGraph [Options] Command\n" 
+	print "Usage: pypy artFlowGraph Command [File/Path] [Options]\n" 
 	print "Available Commands:\n"
-	print "Graph \t To create the object allocation graph from a memory image and heapdump\n"
-	print "\tGraph ImagePath HeapDump_File Graph_Out_File\n"	
+	print "Graph:   A utility for creating an object allocation graph from a memory image and a heapdump"
+	print "\t\tpypy artFlowGraph Graph Path-to-ImageFiles Path-to-HeapDump Graph-OutFile.dot"
+	print "Strings: A utility for simple string object search"
+	print "\t\tpypy artFlowGraph Strings Graph-InFile "
+	print "\t\tpypy artFlowGraph Strings Graph-InFile seachString"
+	print "Context: A utility that recursively find the broader context for a target object"
+	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress Depth"
+	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress Depth Plot"
+	
+			
 
 def getRoot(G):
 	return G.nodes()[0]
 	
 def getGCRoot(heapDump):
-	#command = "pypy artProj.py "+dir+" IndirectRefs GCRoot"
-	#gcroot = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).stdout.read().split('\n')[1]
 	g = open(heapDump, 'r')
 	gcroot =[]
 	for line in g.readlines():
@@ -215,10 +202,6 @@ def getGlobs(dir):
 	hp = heap.android_heap()
 	[TLAB, NonTLAB, threads, bitmap_size_, heapBegin_] = art.helper(hp, th, nPath, rAddr, dir, memList)
 	return [nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_]
-	#command = "pypy artProj.py "+dir+" GetGlobs ""
-	#decoded = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).stdout.read()
-	
-	#[threads, hp, bitmap_size_, heapBegin_, nPath, rAddr, memList, mapList, listing,lstList,runtime] 
 
 def usage():
 	global dir, root, depth, gFile, nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_, art, jvm, jvm2
@@ -227,85 +210,49 @@ def usage():
 	elif len(sys.argv) < 3:
 		print "Insufficient arguments. Try -h for usage and command options"
 	else:#dir = sys.argv[1] 
-		if (sys.argv[1]=="Graph"):#Generate Object Allocation graph from process memory dump given the starting point
-			import artParse as art
-			import artJVM as jvm
-			import artJVM2 as jvm2
-			dir = sys.argv[2]
-			[nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_] = getGlobs(dir)
-			#if len(sys.argv) ==3:
-			#	roots =  getGCRoot(dir)
-			#else:
-			#	roots = sys.argv[3]
-			#if len(sys.argv) >5:
-			#	depth = int(sys.argv[4])
-			#	gFile = sys.argv[5]
-			#else:
-			#	depth=0
-			#	gFile = sys.argv[4]
-			heapDump = sys.argv[3]
-			roots =  getGCRoot(heapDump)
-			gFile = sys.argv[4]
-			depth=0
-			G=AGraph(strict=False,directed=True)
-			getGraph(G, gFile, roots)
-			print G.order()
-			print len(G.edges())
-		elif (sys.argv[1]=="AddGraph"):
-			import artParse as art
-			import artJVM as jvm
-			import artJVM2 as jvm2
-			dir = sys.argv[2]
-			[nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_] = getGlobs(dir)
-			gFile = sys.argv[3]
-			root = sys.argv[4]
-			G=AGraph(gFile, strict=False,directed=True)
-			G.add_node(root, id=root, label='', data='')
-			start = G.get_node(root)#74273
-			depth=0
-			getGraph(G, gFile, root)
-		else:
+		try:
 			import os.path
-			if (os. path. isfile(sys.argv[1])):
-				gFile = sys.argv[1]
+			if (sys.argv[1]=="Graph"):#Generate Object Allocation graph from process memory dump given the starting point
+				import artParse as art
+				import artJVM as jvm
+				import artJVM2 as jvm2
+				dir = sys.argv[2]
+				[nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_] = getGlobs(dir)
+				heapDump = sys.argv[3]
+				roots =  getGCRoot(heapDump)
+				gFile = sys.argv[4]
+				depth=0
+				G=AGraph(strict=False,directed=True)
+				getGraph(G, gFile, roots)
+				print G.order()
+				print len(G.edges())
+			elif (sys.argv[1]=="Strings" and os.path.isfile(sys.argv[2])):
+				gFile = sys.argv[2]
 				G=AGraph(gFile, strict=False,directed=False)
-				if (sys.argv[2]=="Strings"):
-					strings = proc.getStrings(G)
-					if len(sys.argv) >3:
-						strSearch = sys.argv[3]
-						strings = [i for i in strings if strSearch in i]
-					print "\n".join(strings) # Start from a string  then plot the subgraph of the top predessaor to target
-				elif (sys.argv[2]=="Context"):
-					target=sys.argv[3]
-					depth = int(sys.argv[4])
-					nodeList = proc.getContext(G, target, depth)
-					if len(sys.argv) >5 and sys.argv[5] == "Plot":
-						proc.pltSub(G, nodeList)
-					else:
-						proc.printNodes(G, nodeList)
+				strings = proc.getStrings(G)
+				if len(sys.argv) >3:
+					strSearch = sys.argv[3]
+					strings = [i for i in strings if strSearch in i]
+				print "\n".join(strings) # Start from a string  then plot the subgraph of the top predessaor to target
+			elif(sys.argv[1]=="Context" and os.path.isfile(sys.argv[2])):
+				gFile = sys.argv[2]
+				G=AGraph(gFile, strict=False,directed=False)
+				target=sys.argv[3]
+				depth = int(sys.argv[4])
+				nodeList = proc.getContext(G, target, depth)
+				if len(sys.argv) >5 and sys.argv[5] == "Plot":
+					proc.pltSub(G, nodeList)
+				else:
+					proc.printNodes(G, nodeList)
 			else:
-				print "Invalid Option"
+				print "Invalid Option, Try -h for usage and command options"
+		except:
+			print "Invalid Option, Try -h for usage and command options"
 			
 if __name__ == "__main__":
-	#s = time()
 	print "Android Object Allocation Graph"
-	#try:
-	usage()
-	#except Exception, ex:
-	#	print ex
-	#print time() - s
+	try:
+		usage()
+	except Exception, ex:
+		print ex
 
-
-#print G.nodes_with_selfloops()
-#displayGraph('file.dot', 'file.png')
-
-#finish = G.get_node(node)
-#print G.out_neighbors(node)
-#print G.subgraphs()
-#for g in G.subgraphs():
-#	print g.string()
-
-
-#G.write('file.out')
-
-#Read globals into an array - only resolved names

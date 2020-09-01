@@ -1,3 +1,7 @@
+"""
+@author: Aisha Ali-Gombe
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
+"""
 #!/usr/bin/python
 
 import artParse as art

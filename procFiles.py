@@ -1,3 +1,7 @@
+"""
+@author: Aisha Ali-Gombe
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
+"""
 #!/usr/bin/python
 import sys, collections
 from pygraphviz import *
@@ -6,8 +10,6 @@ import numpy as np
 from networkx.algorithms.connectivity import k_components
 from collections import OrderedDict
 #import matplotlib.pyplot as plt
-
-from networkx.algorithms.community.centrality import girvan_newman
 
 def findPaths(g, start, finish): 
 	start = g.get_node(start)

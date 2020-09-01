@@ -1,6 +1,6 @@
 """
 @author: Aisha Ali-Gombe
-@contact: aaligombe@towson.edu
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
 """
 import artParse as art
 import art_types as types

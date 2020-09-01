@@ -1,9 +1,8 @@
-#!/usr/bin/python
-
 """
 @author: Aisha Ali-Gombe
-@contact: aaligombe@towson.edu
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
 """
+#!/usr/bin/python
 
 
 import art_types as types

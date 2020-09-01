@@ -1,3 +1,7 @@
+"""
+@author: Aisha Ali-Gombe
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
+"""
 import artParse as art
 import artClass as cls
 import sys, os, subprocess, struct,binascii

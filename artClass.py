@@ -1,3 +1,8 @@
+"""
+@author: Aisha Ali-Gombe
+@contact: aaligombe@towson.edu, apphackuno@gmail.com
+"""
+
 import artParse as art
 import sys, os, subprocess, struct,binascii
 from collections import OrderedDict
