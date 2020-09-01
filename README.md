@@ -1,4 +1,6 @@
-# OAGen is a post-execution and app-agnostic semantic analysis for Android
+# OAGen 
+=========================
+OAGen is a post-execution and app-agnostic semantic analysis for Android
 designed to help investigators establish concrete evidence by identifying the provenance 
 and relationships between in-memory objects in a process memory image.
 
@@ -54,7 +56,7 @@ Run context with 0x136b4078 as target
 
   pypy artFlowGraph.py Context whatApp2AllObj.dot 0x136b4078 50
 
-2)Plot the graph and visualize the subgraph – 
+2) Plot the graph and visualize the subgraph – 
 
   pypy artFlowGraph.py Context whatApp2AllObj.dot 0x136b4078 50 Plot
   
