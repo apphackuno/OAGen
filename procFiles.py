@@ -11,7 +11,7 @@ from networkx.algorithms.connectivity import k_components
 from collections import OrderedDict
 #import matplotlib.pyplot as plt
 
-def findPaths(g, start, finish): 
+def findPath(g, start, finish): 
 	start = g.get_node(start)
 	finish = g.get_node(finish)
 	finPath=[]
@@ -29,7 +29,8 @@ def getThreads(G): #ALl Threads
 	return jThreadNodes
 	
 def getObjects(G, obj): #Searcg of Objects
-	return [node for node in G.iternodes() if obj == str(node.attr['label'])]
+	objNodes = [node for node in G.iternodes() if obj == str(node.attr['label'])]
+	return  objNodes
 
 def getRoot(G):
 	return G.nodes()[0]	
@@ -60,9 +61,8 @@ def findTarget(G, node, depth):
 	return nodeList
 
 #recursively iterate itersucc until empty to get all nodes from target until root
-def findDownTarget(G, node): 
+def findDownTarget(G, node, depth): 
 	nodeList=[node]
-	depth=10
 	for n in nodeList:
 		for i in G.itersucc(n):
 			nodeList.append(i)
@@ -134,3 +134,4 @@ def lrc(G, Gnx):
 		if c==1.0:
 			cent.append(node)
 	return cent
+	

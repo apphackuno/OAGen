@@ -210,49 +210,92 @@ def usage():
 	elif len(sys.argv) < 3:
 		print "Insufficient arguments. Try -h for usage and command options"
 	else:#dir = sys.argv[1] 
-		try:
-			import os.path
-			if (sys.argv[1]=="Graph"):#Generate Object Allocation graph from process memory dump given the starting point
-				import artParse as art
-				import artJVM as jvm
-				import artJVM2 as jvm2
-				dir = sys.argv[2]
-				[nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_] = getGlobs(dir)
-				heapDump = sys.argv[3]
-				roots =  getGCRoot(heapDump)
-				gFile = sys.argv[4]
-				depth=0
-				G=AGraph(strict=False,directed=True)
-				getGraph(G, gFile, roots)
-				print G.order()
-				print len(G.edges())
-			elif (sys.argv[1]=="Strings" and os.path.isfile(sys.argv[2])):
-				gFile = sys.argv[2]
-				G=AGraph(gFile, strict=False,directed=False)
-				strings = proc.getStrings(G)
-				if len(sys.argv) >3:
-					strSearch = sys.argv[3]
-					strings = [i for i in strings if strSearch in i]
-				print "\n".join(strings) # Start from a string  then plot the subgraph of the top predessaor to target
-			elif(sys.argv[1]=="Context" and os.path.isfile(sys.argv[2])):
-				gFile = sys.argv[2]
-				G=AGraph(gFile, strict=False,directed=False)
-				target=sys.argv[3]
-				depth = int(sys.argv[4])
-				nodeList = proc.getContext(G, target, depth)
-				if len(sys.argv) >5 and sys.argv[5] == "Plot":
-					proc.pltSub(G, nodeList)
-				else:
-					proc.printNodes(G, nodeList)
+		import os.path
+		if (sys.argv[1]=="Graph"):#Generate Object Allocation graph from process memory dump given the starting point
+			import artParse as art
+			import artJVM as jvm
+			import artJVM2 as jvm2
+			dir = sys.argv[2]
+			[nPath, rAddr, memList, mapList, listing,lstList,runtime, th, hp, bitmap_size_, heapBegin_] = getGlobs(dir)
+			heapDump = sys.argv[3]
+			roots =  getGCRoot(heapDump)
+			gFile = sys.argv[4]
+			depth=0
+			G=AGraph(strict=False,directed=True)
+			getGraph(G, gFile, roots)
+			print G.order()
+			print len(G.edges())
+		elif (sys.argv[1]=="Strings" and os.path.isfile(sys.argv[2])):
+			gFile = sys.argv[2]
+			G=AGraph(gFile, strict=False,directed=False)
+			strings = proc.getStrings(G)
+			if len(sys.argv) >3:
+				strSearch = sys.argv[3]
+				strings = [i for i in strings if strSearch in i]
+			print "\n".join(strings) # Start from a string  then plot the subgraph of the top predessaor to target
+		elif(sys.argv[1]=="Object" and os.path.isfile(sys.argv[2])):
+			gFile = sys.argv[2]
+			G=AGraph(gFile, strict=False,directed=False)
+			obj=sys.argv[3]
+			objNodes = proc.getObjects(G, obj) #e.g obj "org.apache.http.impl.client.DefaultHttpClient"
+			proc.printNodes(G, objNodes)
+		elif(sys.argv[1]=="Path" and os.path.isfile(sys.argv[2])):
+			gFile = sys.argv[2]
+			G=AGraph(gFile, strict=False,directed=False)
+			start=sys.argv[3]
+			finish =sys.argv[4]
+			finPath = proc.findPath(G, start, finish)
+			proc.printNodes(G, finPath)
+		elif(sys.argv[1]=="Scope" and os.path.isfile(sys.argv[2])):
+			gFile = sys.argv[2]
+			G=AGraph(gFile, strict=False,directed=False)
+			target=sys.argv[3]
+			#jThreadNodes = proc.getThreads(G)
+			#proc.printNodes(G, jThreadNodes)
+			#print len(jThreadNodes)
+			#proc.traversePath(jThreadNodes, target)
+			depth = int(sys.argv[4])
+			nodeList = proc.findDownTarget(G, target, depth)
+			#proc.printNodes(G, nodeList)
+			if len(sys.argv) >5 and sys.argv[5] == "Plot":
+				proc.pltSub(G, sorted(nodeList))
 			else:
-				print "Invalid Option, Try -h for usage and command options"
-		except:
+				proc.printNodes(G, nodeList)
+		elif(sys.argv[1]=="Context" and os.path.isfile(sys.argv[2])):
+			gFile = sys.argv[2]
+			G=AGraph(gFile, strict=False,directed=False)
+			target=sys.argv[3]
+			if sys.argv[4]=="-d":
+				depth = int(sys.argv[5])
+				nodeList = proc.getContext(G, target, depth)
+			elif sys.argv[4]=="-w":
+				print "here"
+				width = int(sys.argv[5])
+				allNodes = G.nodes()
+				if target in allNodes:
+					idx = allNodes.index(target)
+					start = idx-width
+					stop = idx+width
+					nodeList=[]
+					for i in range(start, stop):
+						nodeList.append(allNodes[i])
+					#proc.printNodes(G, nodeList)
+				else:
+					print "Target not Graph"
+			else:
+				print "Deafult to depth of 10"
+				nodeList = proc.getContext(G, target, 10)
+			if len(sys.argv) >6 and sys.argv[6] == "Plot":
+				proc.pltSub(G, sorted(nodeList))
+			else:
+				proc.printNodes(G, nodeList)
+		else:
 			print "Invalid Option, Try -h for usage and command options"
 			
 if __name__ == "__main__":
 	print "Android Object Allocation Graph"
-	try:
-		usage()
-	except Exception, ex:
-		print ex
+	#try:
+	usage()
+	#except Exception, ex:
+	#	print ex
 
