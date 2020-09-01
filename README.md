@@ -20,7 +20,7 @@ Requirements:
 =========================
 ProcMem - Extract per process memory from Android device or emulator using Memfetch (Only evaluated on Android 8.0.0)
 
-Heapdump - Dump the heap allocation using DroidScraper ()
+Heapdump - Dump the heap allocation using DroidScraper (git@github.com:apphackuno/DroidScraper.git)
 
 Note:
   Request for test images and heapdump by emailing apphackuno@gmail.com
