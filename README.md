@@ -1,5 +1,4 @@
 # OAGen 
-=========================
 OAGen is a post-execution and app-agnostic semantic analysis for Android
 designed to help investigators establish concrete evidence by identifying the provenance 
 and relationships between in-memory objects in a process memory image.
