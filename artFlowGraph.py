@@ -141,10 +141,8 @@ def findPaths(g, start, finish):
 	return finPath
 	
 	
-def displayGraph(gFile, fName):
-	g=AGraph(gFile)
-	g.layout(prog='dot')
-	g.draw(fName)		
+def displayGraph(gFile, pFile):
+	subprocess.check_output('neato -x -Goverlap=false -o'+pFile +' -Tpng '+gFile, shell = True)	
 	
 
 #provide root, dir and depth are globals	
@@ -173,12 +171,16 @@ def help():
 	print "Available Commands:\n"
 	print "Graph:   A utility for creating an object allocation graph from a memory image and a heapdump"
 	print "\t\tpypy artFlowGraph Graph Path-to-ImageFiles Path-to-HeapDump Graph-OutFile.dot"
+	print "Plot:    Plot the generated OAG"
+	print "\t\tpypy artFlowGraph Plot Graph-InFile Plot-File.png"
 	print "Strings: A utility for simple string object search"
 	print "\t\tpypy artFlowGraph Strings Graph-InFile "
 	print "\t\tpypy artFlowGraph Strings Graph-InFile seachString"
-	print "Context: A utility that recursively find the broader context for a target object"
-	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress Depth"
-	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress Depth Plot"
+	print "Context: A utility that recursively find the broader context for a target object with depth and width"
+	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress -d depth"
+	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress -d depth Plot"
+	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress -w width"
+	print "\t\tpypy artFlowGraph Context Graph-InFile TargetAddress -w width Plot"
 	
 			
 
@@ -239,6 +241,15 @@ def usage():
 			obj=sys.argv[3]
 			objNodes = proc.getObjects(G, obj) #e.g obj "org.apache.http.impl.client.DefaultHttpClient"
 			proc.printNodes(G, objNodes)
+		elif (sys.argv[1]=="Plot"):#Plot the graph
+			gFile = sys.argv[2]
+			pFile = sys.argv[3]
+			G=AGraph(gFile, strict=False,directed=False)
+			Gnx = nx.nx_agraph.from_agraph(G)
+			#pos = Gnx.sfdp_layout(g)
+			#G.graph_draw(G, pos=pos, output="graph-draw-sfdp.pdf")
+			#graphviz_draw(g,
+			displayGraph(gFile, pFile)
 		elif(sys.argv[1]=="Path" and os.path.isfile(sys.argv[2])):
 			gFile = sys.argv[2]
 			G=AGraph(gFile, strict=False,directed=False)
@@ -294,8 +305,8 @@ def usage():
 			
 if __name__ == "__main__":
 	print "Android Object Allocation Graph"
-	#try:
-	usage()
-	#except Exception, ex:
-	#	print ex
+	try:
+		usage()
+	except Exception, ex:
+		print ex
 
