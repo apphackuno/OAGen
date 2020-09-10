@@ -6,7 +6,7 @@
 import sys, collections
 from pygraphviz import *
 import networkx as nx
-import numpy as np
+#import numpy as np
 from networkx.algorithms.connectivity import k_components
 from collections import OrderedDict
 #import matplotlib.pyplot as plt

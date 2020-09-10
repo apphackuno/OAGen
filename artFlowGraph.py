@@ -3,7 +3,7 @@
 @contact: aaligombe@towson.edu, apphackuno@gmail.com
 """
 import subprocess, sys, hashlib
-from pygraphviz import *
+#from pygraphviz import *
 import networkx as nx
 from collections import OrderedDict
 import procFiles as proc
